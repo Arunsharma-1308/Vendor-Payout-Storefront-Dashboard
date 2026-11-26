@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vendor Payout & Storefront Dashboard</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#edf2ef;--card:#fff;--tx:#12231f;--mu:#5d6f69;--bd:#d5dfda;--pr:#0f766e;--onpr:#fff;--soft:#e1f0ec;
+--ok:#166534;--okb:#dcfce7;--wa:#92400e;--wab:#fef3c7;--er:#991b1b;--erb:#fee2e2}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0d1714;--card:#15221e;--tx:#e6f1ed;--mu:#9bb1aa;--bd:#263a34;--pr:#5eead4;--onpr:#06201b;--soft:#1b3029;--ok:#86efac;--okb:#12351f;--wa:#fcd34d;--wab:#3a2c0b;--er:#fca5a5;--erb:#3b1616}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0d1714;--card:#15221e;--tx:#e6f1ed;--mu:#9bb1aa;--bd:#263a34;--pr:#5eead4;--onpr:#06201b;--soft:#1b3029;--ok:#86efac;--okb:#12351f;--wa:#fcd34d;--wab:#3a2c0b;--er:#fca5a5;--erb:#3b1616}
+*{box-sizing:border-box}
+html,body{margin:0}body{background:var(--bg);color:var(--tx);font:15px/1.5 "Public Sans",system-ui,sans-serif}
+h1,h2,h3,.big{font-family:Fraunces,Georgia,serif;margin:0}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 20px 8px}
+h1{font-size:clamp(20px,4vw,28px)}small,.mu{color:var(--mu)}
+nav{display:flex;gap:4px;padding:0 20px;border-bottom:1px solid var(--bd);overflow-x:auto}
+nav button{background:none;border:0;border-bottom:3px solid transparent;padding:10px 14px;color:var(--mu);font:inherit;font-weight:500;cursor:pointer;white-space:nowrap}
+nav button.on{color:var(--tx);border-color:var(--pr)}
+main{padding:20px;max-width:1100px;margin:auto}
+section[hidden]{display:none}
+button{font:inherit;cursor:pointer}button:focus-visible,input:focus-visible,nav button:focus-visible{outline:2px solid var(--pr);outline-offset:2px}
+.btn{background:var(--pr);color:var(--onpr);border:0;border-radius:6px;padding:8px 14px;font-weight:600}
+.ghost{background:none;color:var(--tx);border:1px solid var(--bd);border-radius:6px;padding:7px 12px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));background:var(--card);border:1px solid var(--bd);border-radius:10px}
+.kpis div{padding:16px 18px;border-right:1px solid var(--bd)}.kpis div:last-child{border:0}
+.kpis b{display:block;font:700 24px Fraunces,Georgia,serif;font-variant-numeric:tabular-nums}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;margin-top:24px}
+.g2 h3{font-size:16px;margin-bottom:6px}
+svg{width:100%;height:auto}svg .b{fill:var(--pr)}svg .l{stroke:var(--pr);fill:none;stroke-width:2.5}svg .a{stroke:var(--bd)}svg text{fill:var(--mu);font-size:9px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+.prod{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:16px}
+.prod .e{font-size:42px;background:var(--soft);border-radius:8px;text-align:center;padding:14px 0;margin-bottom:10px}
+.prod h3{font-size:16px}.pr{font-weight:600;font-variant-numeric:tabular-nums}
+.b2{display:inline-block;border-radius:99px;padding:1px 10px;font-size:12px;font-weight:600}
+.matched,.ok{background:var(--okb);color:var(--ok)}.pending,.wa{background:var(--wab);color:var(--wa)}.mismatch,.er{background:var(--erb);color:var(--er)}
+.wrap{overflow-x:auto;background:var(--card);border:1px solid var(--bd);border-radius:10px}
+table{width:100%;border-collapse:collapse;min-width:640px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--bd);font-variant-numeric:tabular-nums}
+th{font-weight:600;color:var(--mu);font-size:13px}tr:last-child td{border:0}
+td.n,th.n{text-align:right}
+.top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:16px}
+.big{font-size:clamp(34px,8vw,56px);font-weight:700;color:var(--pr);font-variant-numeric:tabular-nums;line-height:1.1}
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.new{animation:in .5s ease}
+@keyframes in{from{opacity:0;transform:translateY(-14px);background:var(--soft)}to{opacity:1;transform:none}}
+.form{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:16px;background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px}
+label{display:flex;flex-direction:column;font-size:13px;color:var(--mu);gap:3px}
+input{font:inherit;padding:7px 10px;border:1px solid var(--bd);border-radius:6px;background:var(--bg);color:var(--tx);width:150px}
+#err{color:var(--er);font-size:13px;flex-basis:100%;margin:0}
+.empty{padding:28px;text-align:center;color:var(--mu)}
+.sm{padding:3px 9px;border:1px solid var(--bd);border-radius:5px;background:none;color:var(--tx)}
+@media(prefers-reduced-motion:reduce){.new{animation:none}}
+</style>
+</head>
+<body>
+<header><div><h1>Vendor Payout &amp; Storefront Dashboard</h1><small id="vn"></small></div><button class="ghost" id="th" title="Switch theme">Theme</button></header>
+<nav id="nav"><button data-t="dash" class="on">Overview</button><button data-t="store">Storefront</button><button data-t="inv">Inventory</button><button data-t="led">Payout Ledger</button></nav>
+<main>
+<section id="dash"></section>
+<section id="store" hidden></section>
+<section id="inv" hidden></section>
+<section id="led" hidden>
+<div class="top"><div><div class="mu">Running balance (payouts received)</div><div id="bal" class="big">₹0</div></div>
+<div class="pills" id="pills"></div>
+<div><button class="btn" id="play">Replay reconciliation</button> <button class="ghost" id="regen">New dataset</button></div></div>
+<div class="wrap"><table><thead><tr><th>Order</th><th>Date</th><th>Product</th><th class="n">Order amount</th><th class="n">Expected payout</th><th class="n">Received</th><th>Status</th><th class="n">Balance</th></tr></thead><tbody id="lb"></tbody></table></div>
+<p class="mu">Expected payout = order amount minus an 8% marketplace fee. A payout within ₹1 of that is matched, a different amount is a mismatch, and no payout yet means pending.</p>
+</section>
+</main>
+<script>
+const $=s=>document.querySelector(s),money=n=>'₹'+Math.round(n).toLocaleString('en-IN');
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const KEY='vpsd1';let S,timer,played=false,editId=null;
+
+/* Data generation (seeded random) */
+function rng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function gen(seed){
+ const r=rng(seed),ri=(a,b)=>a+Math.floor(r()*(b-a+1));
+ const cat=[['Wireless Earbuds','🎧',1499],['Smart Watch','⌚',2999],['Power Bank 20000mAh','🔋',1299],['Bluetooth Speaker','🔊',1799],['USB-C Cable','🔌',299],['Phone Case','📱',399],['Laptop Stand','💻',999],['Mechanical Keyboard','⌨️',2499],['Gaming Mouse','🖱️',899],['Webcam HD','📷',1599],['LED Desk Lamp','💡',699],['Fitness Band','🏃',1999]];
+ const products=cat.map((c,i)=>({id:i+1,name:c[0],emo:c[1],price:c[2]+ri(-5,5)*10,stock:ri(0,60),rating:(3.5+r()*1.5).toFixed(1)}));
+ const orders=[],payouts=[];
+ for(let i=0;i<26;i++){
+  const p=products[ri(0,11)],q=ri(1,4),amt=p.price*q,id='ORD-'+(1001+i),x=r();
+  orders.push({id,name:p.name,qty:q,amt,date:new Date(Date.UTC(2026,8,1+i*2+ri(0,1))).toISOString().slice(0,10)});
+  const exp=Math.round(amt*.92);
+  if(i>20?x<.7:x<.07)continue;            /* pending: payout not received yet */
+  payouts.push({oid:id,amt:x>.88?exp-ri(25,180):exp}); /* ~12% mismatched */
+ }
+ return{seed,vendor:'Sharma Electronics',products,orders,payouts,nid:13};
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function load(){try{const j=localStorage.getItem(KEY);if(j)return JSON.parse(j)}catch(e){}return null}
+
+/* Reconciliation engine */
+function reconcile(){let bal=0;return S.orders.map(o=>{
+ const exp=Math.round(o.amt*.92),p=S.payouts.find(x=>x.oid===o.id);let st='pending',got=0;
+ if(p){got=p.amt;st=Math.abs(got-exp)<=1?'matched':'mismatch'}
+ bal+=got;return{...o,exp,got,st,bal}})}
+
+/* Ledger + animation */
+const LBL={matched:'Matched',pending:'Pending',mismatch:'Mismatch'};
+const row=(r,anim)=>`<tr class="${anim?'new':''}"><td>${r.id}</td><td>${r.date}</td><td>${esc(r.name)} × ${r.qty}</td><td class="n">${money(r.amt)}</td><td class="n">${money(r.exp)}</td><td class="n">${r.st=='pending'?'—':money(r.got)}</td><td><span class="b2 ${r.st}">${LBL[r.st]}</span></td><td class="n"><b>${money(r.bal)}</b></td></tr>`;
+function pills(rows){const c=k=>rows.filter(r=>r.st==k).length;
+ $('#pills').innerHTML=['matched','pending','mismatch'].map(k=>`<span class="b2 ${k}">${c(k)} ${LBL[k].toLowerCase()}</span>`).join('')}
+function count(el,a,b,ms=400){const t0=performance.now();(function f(t){const k=Math.min((t-t0)/ms,1);el.textContent=money(a+(b-a)*k);if(k<1)requestAnimationFrame(f)})(t0)}
+function play(){clearInterval(timer);const rows=reconcile(),tb=$('#lb');tb.innerHTML='';let i=0,from=0;pills([]);$('#bal').textContent=money(0);
+ timer=setInterval(()=>{if(i>=rows.length)return clearInterval(timer);
+  const r=rows[i++];tb.insertAdjacentHTML('afterbegin',row(r,1));count($('#bal'),from,r.bal);from=r.bal;pills(rows.slice(0,i))},300)}
+
+/* Charts (plain SVG) */
+function chart(v,lab,type){const W=360,H=170,p=26,m=Math.max(...v,1),n=v.length,bw=(W-2*p)/n,y=x=>H-p-(H-2*p)*x/m;
+ let g=`<line class="a" x1="${p}" y1="${H-p}" x2="${W-p}" y2="${H-p}"/><text x="${p}" y="12">${money(m)}</text>`;
+ if(type=='bar')v.forEach((x,i)=>g+=`<rect class="b" x="${p+i*bw+5}" y="${y(x)}" width="${bw-10}" height="${H-p-y(x)}" rx="3"/><text x="${p+i*bw+bw/2}" y="${H-10}" text-anchor="middle">${lab[i]}</text>`);
+ else g+=`<polyline class="l" points="${v.map((x,i)=>`${p+i*(W-2*p)/(n-1)},${y(x)}`).join(' ')}"/><text x="${W-p}" y="${H-10}" text-anchor="end">Order ${n}</text><text x="${p}" y="${H-10}">Order 1</text>`;
+ return`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${type} chart">${g}</svg>`}
+
+/* Views */
+function dash(){const rows=reconcile(),sum=(a,f)=>a.reduce((s,x)=>s+f(x),0),wk=[];
+ rows.forEach((r,i)=>{const k=Math.floor(i/4);wk[k]=(wk[k]||0)+r.amt});
+ $('#dash').innerHTML=`<div class="kpis"><div class="mu">Total sales<b>${money(sum(rows,r=>r.amt))}</b></div><div class="mu">Payouts received<b>${money(rows.length?rows[rows.length-1].bal:0)}</b></div><div class="mu">Pending payouts<b>${money(sum(rows.filter(r=>r.st=='pending'),r=>r.exp))}</b></div><div class="mu">Mismatched orders<b>${rows.filter(r=>r.st=='mismatch').length}</b></div></div>
+ <div class="g2"><div><h3>Sales per 4-order period</h3>${chart(wk,wk.map((_,i)=>'P'+(i+1)),'bar')}</div><div><h3>Running payout balance</h3>${rows.length>1?chart(rows.map(r=>r.bal),[],'line'):''}</div></div>`}
+function store(){const s=x=>x.stock==0?['er','Out of stock']:x.stock<10?['wa','Only '+x.stock+' left']:['ok','In stock'];
+ $('#store').innerHTML=S.products.length?`<div class="grid">${S.products.map(x=>`<div class="prod"><div class="e">${x.emo}</div><h3>${esc(x.name)}</h3><div class="pr">${money(x.price)}</div><div class="mu">★ ${x.rating}</div><span class="b2 ${s(x)[0]}">${s(x)[1]}</span></div>`).join('')}</div>`:'<div class="empty">No products listed yet. Add your first product in Inventory.</div>'}
+function inv(){const e=S.products.find(x=>x.id===editId)||{name:'',price:'',stock:''};
+ $('#inv').innerHTML=`<div class="form"><label>Product name<input id="pn" value="${esc(e.name)}"></label><label>Price (₹)<input id="pp" type="number" min="1" value="${e.price}"></label><label>Stock<input id="ps" type="number" min="0" value="${e.stock}"></label>
+ <button class="btn" data-act="save">${editId?'Save changes':'Add product'}</button>${editId?'<button class="ghost" data-act="cancel">Cancel</button>':''}<p id="err"></p></div>
+ <div class="wrap"><table><thead><tr><th>Product</th><th class="n">Price</th><th>Stock</th><th></th></tr></thead><tbody>${S.products.map(x=>`<tr><td>${x.emo} ${esc(x.name)}</td><td class="n">${money(x.price)}</td><td><button class="sm" data-act="dec" data-id="${x.id}" aria-label="Decrease stock">−</button> <b>${x.stock}</b> <button class="sm" data-act="inc" data-id="${x.id}" aria-label="Increase stock">+</button></td><td class="n"><button class="sm" data-act="edit" data-id="${x.id}">Edit</button> <button class="sm" data-act="del" data-id="${x.id}">Remove</button></td></tr>`).join('')||'<tr><td colspan="4" class="empty">Inventory is empty.</td></tr>'}</tbody></table></div>`}
+function all(){$('#vn').textContent=S.vendor+' · simulated data, nothing leaves your browser';dash();store();inv()}
+
+/* Events */
+document.addEventListener('click',ev=>{const b=ev.target.closest('[data-act]');if(!b)return;
+ const id=+b.dataset.id,p=S.products.find(x=>x.id===id),a=b.dataset.act;
+ if(a=='save'){const n=$('#pn').value.trim(),pr=+$('#pp').value,st=$('#ps').value;
+  if(!n||!(pr>0)||st===''||+st<0){$('#err').textContent='Enter a product name, a price above 0 and a stock of 0 or more.';return}
+  if(editId)Object.assign(S.products.find(x=>x.id===editId),{name:n,price:pr,stock:Math.floor(+st)});
+  else S.products.push({id:S.nid++,name:n,emo:'📦',price:pr,stock:Math.floor(+st),rating:(3.8+Math.random()).toFixed(1)});
+  editId=null}
+ if(a=='cancel')editId=null;if(a=='edit')editId=id;
+ if(a=='inc')p.stock++;if(a=='dec')p.stock=Math.max(0,p.stock-1);
+ if(a=='del')S.products=S.products.filter(x=>x.id!=id);
+ save();all()});
+$('#nav').onclick=e=>{const t=e.target.dataset.t;if(!t)return;
+ document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x==e.target));
+ document.querySelectorAll('main section').forEach(x=>x.hidden=x.id!=t);
+ if(t=='led'&&!played){played=true;play()}};
+$('#play').onclick=play;
+$('#regen').onclick=()=>{S=gen(Date.now()%100000);save();all();play()};
+$('#th').onclick=()=>{const d=document.documentElement,c=d.dataset.theme||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');d.dataset.theme=c=='dark'?'light':'dark'};
+
+S=load()||gen(2026);save();all();
+</script>
+</body>
+</html>
